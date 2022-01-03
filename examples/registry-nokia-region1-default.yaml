@@ -1,0 +1,11 @@
+apiVersion: as.nddr.yndd.io/v1alpha1
+kind: Registry
+metadata:
+  name: nokia.region1.default
+  namespace: default
+spec:
+  registry:
+    description: deterministic deployment AS pool
+    allocation-strategy: deterministic
+    start: 65000
+    end: 65099
