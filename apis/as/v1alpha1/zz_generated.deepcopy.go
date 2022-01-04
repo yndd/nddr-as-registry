@@ -285,7 +285,7 @@ func (in *RegisterSpec) DeepCopyInto(out *RegisterSpec) {
 	}
 	if in.Register != nil {
 		in, out := &in.Register, &out.Register
-		*out = new(NddrAsRegister)
+		*out = new(AsRegister)
 		(*in).DeepCopyInto(*out)
 	}
 }
