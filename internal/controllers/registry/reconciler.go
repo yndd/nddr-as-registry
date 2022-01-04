@@ -175,7 +175,7 @@ func (r *application) Delete(ctx context.Context, mg resource.Managed) (bool, er
 func (r *application) FinalDelete(ctx context.Context, mg resource.Managed) {
 	cr, ok := mg.(*asv1alpha1.Registry)
 	if !ok {
-		return 
+		return
 	}
 	crName := getCrName(cr)
 	r.handler.Delete(crName)

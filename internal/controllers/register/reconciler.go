@@ -29,7 +29,7 @@ import (
 	asv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/handler"
 	"github.com/yndd/nddr-as-registry/internal/shared"
-	"github.com/yndd/nddr-organization/pkg/registry"
+	"github.com/yndd/nddr-org-registry/pkg/registry"
 	ctrl "sigs.k8s.io/controller-runtime"
 	"sigs.k8s.io/controller-runtime/pkg/controller"
 )
