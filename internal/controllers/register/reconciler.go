@@ -24,10 +24,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/yndd/ndd-runtime/pkg/event"
 	"github.com/yndd/ndd-runtime/pkg/logging"
-	"github.com/yndd/nddo-runtime/pkg/odr"
 	"github.com/yndd/nddo-runtime/pkg/reconciler/managed"
 	"github.com/yndd/nddo-runtime/pkg/resource"
-	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/registry/v1alpha1"
+	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/handler"
 	"github.com/yndd/nddr-as-registry/internal/shared"
 	"github.com/yndd/nddr-organization/pkg/registry"
@@ -95,12 +94,7 @@ type application struct {
 }
 
 func getCrName(cr asregv1alpha1.Rr) string {
-	odr, err := odr.GetOdrRegisterInfo(cr.GetName())
-	if err != nil {
-		return ""
-	}
-
-	return strings.Join([]string{cr.GetNamespace(), odr.FullRegistryName}, ".")
+	return strings.Join([]string{cr.GetNamespace(), cr.GetRegistryName()}, ".")
 }
 
 func (r *application) Initialize(ctx context.Context, mg resource.Managed) error {
@@ -148,14 +142,9 @@ func (r *application) Delete(ctx context.Context, mg resource.Managed) (bool, er
 
 	crName := getCrName(cr)
 
-	odr, err := odr.GetOdrRegisterInfo(cr.GetName())
-	if err != nil {
-		return true, err
-	}
-
 	registerInfo := &handler.RegisterInfo{
 		Namespace:    cr.GetNamespace(),
-		RegistryName: odr.FullRegistryName,
+		RegistryName: cr.GetRegistryName(),
 		CrName:       crName,
 		Selector:     cr.GetSelector(),
 		SourceTag:    cr.GetSourceTag(),
@@ -179,14 +168,10 @@ func (r *application) handleAppLogic(ctx context.Context, cr asregv1alpha1.Rr) (
 	log.Debug("handleAppLogic")
 
 	crName := getCrName(cr)
-	odr, err := odr.GetOdrRegisterInfo(cr.GetName())
-	if err != nil {
-		return nil, err
-	}
 
 	registerInfo := &handler.RegisterInfo{
 		Namespace:    cr.GetNamespace(),
-		RegistryName: odr.FullRegistryName,
+		RegistryName: cr.GetRegistryName(),
 		CrName:       crName,
 		Selector:     cr.GetSelector(),
 		SourceTag:    cr.GetSourceTag(),

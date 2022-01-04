@@ -1,8 +1,8 @@
 apiVersion: as.nddr.yndd.io/v1alpha1
 kind: Registry
 metadata:
-  name: nokia.default
-  namespace: default
+  name: default
+  namespace: nokia
 spec:
   registry:
     description: deterministic global AS pool

@@ -75,27 +75,15 @@ func (x *Register) SetConditions(c ...nddv1.Condition) {
 }
 
 func (x *Register) GetOrganizationName() string {
-	odr, err := odr.GetOdrRegisterInfo(x.GetName())
-	if err != nil {
-		return ""
-	}
-	return odr.OrganizationName
+	return odr.GetOrganizationName(x.GetNamespace())
 }
 
 func (x *Register) GetDeploymentName() string {
-	odr, err := odr.GetOdrRegisterInfo(x.GetName())
-	if err != nil {
-		return ""
-	}
-	return odr.DeploymentName
+	return odr.GetDeploymentName(x.GetNamespace())
 }
 
 func (x *Register) GetRegistryName() string {
-	odr, err := odr.GetOdrRegisterInfo(x.GetName())
-	if err != nil {
-		return ""
-	}
-	return odr.RegistryName
+	return *x.Spec.RegistryName
 }
 
 func (n *Register) GetSourceTag() map[string]string {

@@ -88,6 +88,10 @@ spec:
                         type: integer
                     type: object
                 type: object
+              registry-name:
+                type: string
+            required:
+            - registry-name
             type: object
           status:
             description: A RegisterStatus represents the observed state of a Register.

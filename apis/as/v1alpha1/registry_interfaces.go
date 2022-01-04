@@ -76,27 +76,15 @@ func (x *Registry) SetConditions(c ...nddv1.Condition) {
 }
 
 func (x *Registry) GetOrganizationName() string {
-	odr, err := odr.GetOdrRegistryInfo(x.GetName())
-	if err != nil {
-		return ""
-	}
-	return odr.OrganizationName
+	return odr.GetOrganizationName(x.GetNamespace())
 }
 
 func (x *Registry) GetDeploymentName() string {
-	odr, err := odr.GetOdrRegistryInfo(x.GetName())
-	if err != nil {
-		return ""
-	}
-	return odr.DeploymentName
+	return odr.GetDeploymentName(x.GetNamespace())
 }
 
 func (x *Registry) GetRegistryName() string {
-	odr, err := odr.GetOdrRegistryInfo(x.GetName())
-	if err != nil {
-		return ""
-	}
-	return odr.RegistryName
+	return x.GetName()
 }
 
 func (n *Registry) GetAllocationStrategy() string {

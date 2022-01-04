@@ -44,7 +44,8 @@ type AsRegister struct {
 
 // A RegisterSpec defines the desired state of a Register.
 type RegisterSpec struct {
-	Register *NddrAsRegister `json:"register,omitempty"`
+	RegistryName *string         `json:"registry-name"`
+	Register     *NddrAsRegister `json:"register,omitempty"`
 }
 
 // A RegisterStatus represents the observed state of a Register.

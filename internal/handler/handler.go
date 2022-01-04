@@ -9,7 +9,7 @@ import (
 	"github.com/netw-device-driver/ndd-runtime/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/yndd/ndd-runtime/pkg/logging"
-	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/registry/v1alpha1"
+	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/pool"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
