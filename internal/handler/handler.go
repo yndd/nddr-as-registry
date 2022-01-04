@@ -9,7 +9,7 @@ import (
 	"github.com/netw-device-driver/ndd-runtime/pkg/utils"
 	"github.com/pkg/errors"
 	"github.com/yndd/ndd-runtime/pkg/logging"
-	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
+	asv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/pool"
 	corev1 "k8s.io/api/core/v1"
 	"k8s.io/apimachinery/pkg/types"
@@ -17,7 +17,7 @@ import (
 )
 
 func New(opts ...Option) (Handler, error) {
-	rgfn := func() asregv1alpha1.Rg { return &asregv1alpha1.Registry{} }
+	rgfn := func() asv1alpha1.Rg { return &asv1alpha1.Registry{} }
 	s := &handler{
 		pool:        make(map[string]pool.Pool),
 		speedy:      make(map[string]int),
@@ -54,7 +54,7 @@ type handler struct {
 	// kubernetes
 	client client.Client
 
-	newRegistry func() asregv1alpha1.Rg
+	newRegistry func() asv1alpha1.Rg
 	poolMutex   sync.Mutex
 	pool        map[string]pool.Pool
 	speedyMutex sync.Mutex
@@ -167,7 +167,7 @@ func (r *handler) validateRegister(ctx context.Context, info *RegisterInfo) (poo
 	}
 
 	// check is registry is ready
-	if registry.GetCondition(asregv1alpha1.ConditionKindReady).Status != corev1.ConditionTrue {
+	if registry.GetCondition(asv1alpha1.ConditionKindReady).Status != corev1.ConditionTrue {
 		r.log.Debug("Registry not ready")
 		return nil, nil, errors.New("Registry not ready")
 	}

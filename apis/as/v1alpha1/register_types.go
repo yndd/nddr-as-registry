@@ -78,7 +78,7 @@ type Register struct {
 
 // +kubebuilder:object:root=true
 
-// RegisterList contains a list of AsPools
+// RegisterList contains a list of Registers
 type RegisterList struct {
 	metav1.TypeMeta `json:",inline"`
 	metav1.ListMeta `json:"metadata,omitempty"`

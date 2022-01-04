@@ -26,7 +26,7 @@ import (
 	"github.com/yndd/ndd-runtime/pkg/logging"
 	"github.com/yndd/nddo-runtime/pkg/reconciler/managed"
 	"github.com/yndd/nddo-runtime/pkg/resource"
-	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
+	asv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/handler"
 	"github.com/yndd/nddr-as-registry/internal/shared"
 	"github.com/yndd/nddr-organization/pkg/registry"
@@ -45,14 +45,14 @@ const (
 
 // Setup adds a controller that reconciles infra.
 func Setup(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControllerOptions) error {
-	name := "nddo/" + strings.ToLower(asregv1alpha1.RegisterGroupKind)
-	rgfn := func() asregv1alpha1.Rg { return &asregv1alpha1.Registry{} }
-	//rglfn := func() asregv1alpha1.RgList { return &asregv1alpha1.RegistryList{} }
-	//rrfn := func() asregv1alpha1.Rr { return &asregv1alpha1.Register{} }
-	//rrlfn := func() asregv1alpha1.RrList { return &asregv1alpha1.RegisterList{} }
+	name := "nddo/" + strings.ToLower(asv1alpha1.RegisterGroupKind)
+	rgfn := func() asv1alpha1.Rg { return &asv1alpha1.Registry{} }
+	//rglfn := func() asv1alpha1.RgList { return &asv1alpha1.RegistryList{} }
+	//rrfn := func() asv1alpha1.Rr { return &asv1alpha1.Register{} }
+	//rrlfn := func() asv1alpha1.RrList { return &asv1alpha1.RegisterList{} }
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(asregv1alpha1.RegisterGroupVersionKind),
+		resource.ManagedKind(asv1alpha1.RegisterGroupVersionKind),
 		managed.WithLogger(nddcopts.Logger.WithValues("controller", name)),
 		managed.WithApplication(&application{
 			client: resource.ClientApplicator{
@@ -70,9 +70,8 @@ func Setup(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControlle
 	return ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o).
-		For(&asregv1alpha1.Register{}).
-		Owns(&asregv1alpha1.Register{}).
-		WithEventFilter(resource.IgnoreUpdateWithoutGenerationChangePredicate()).
+		For(&asv1alpha1.Register{}).
+		Owns(&asv1alpha1.Register{}).
 		WithEventFilter(resource.IgnoreUpdateWithoutGenerationChangePredicate()).
 		Complete(r)
 
@@ -82,7 +81,7 @@ type application struct {
 	client resource.ClientApplicator
 	log    logging.Logger
 
-	newRegistry func() asregv1alpha1.Rg
+	newRegistry func() asv1alpha1.Rg
 
 	//pool    map[string]hash.HashTable
 	handler handler.Handler
@@ -93,7 +92,7 @@ type application struct {
 	//speedyMutex sync.Mutex
 }
 
-func getCrName(cr asregv1alpha1.Rr) string {
+func getCrName(cr asv1alpha1.Rr) string {
 	return strings.Join([]string{cr.GetNamespace(), cr.GetRegistryName()}, ".")
 }
 
@@ -102,7 +101,7 @@ func (r *application) Initialize(ctx context.Context, mg resource.Managed) error
 }
 
 func (r *application) Update(ctx context.Context, mg resource.Managed) (map[string]string, error) {
-	cr, ok := mg.(*asregv1alpha1.Register)
+	cr, ok := mg.(*asv1alpha1.Register)
 	if !ok {
 		return nil, errors.New(errUnexpectedResource)
 	}
@@ -111,14 +110,14 @@ func (r *application) Update(ctx context.Context, mg resource.Managed) (map[stri
 }
 
 func (r *application) FinalUpdate(ctx context.Context, mg resource.Managed) {
-	//cr, _ := mg.(*asregv1alpha1.Registry)
+	//cr, _ := mg.(*asv1alpha1.Registry)
 	//crName := getCrName(cr)
 	//r.infra[crName].PrintNodes(crName)
 }
 
 func (r *application) Timeout(ctx context.Context, mg resource.Managed) time.Duration {
 	/*
-		cr, _ := mg.(*asregv1alpha1.Registry)
+		cr, _ := mg.(*asv1alpha1.Registry)
 		crName := getCrName(cr)
 		r.speedyMutex.Lock()
 		speedy := r.speedy[crName]
@@ -133,7 +132,7 @@ func (r *application) Timeout(ctx context.Context, mg resource.Managed) time.Dur
 }
 
 func (r *application) Delete(ctx context.Context, mg resource.Managed) (bool, error) {
-	cr, ok := mg.(*asregv1alpha1.Register)
+	cr, ok := mg.(*asv1alpha1.Register)
 	if !ok {
 		return true, errors.New(errUnexpectedResource)
 	}
@@ -163,7 +162,7 @@ func (r *application) FinalDelete(ctx context.Context, mg resource.Managed) {
 
 }
 
-func (r *application) handleAppLogic(ctx context.Context, cr asregv1alpha1.Rr) (map[string]string, error) {
+func (r *application) handleAppLogic(ctx context.Context, cr asv1alpha1.Rr) (map[string]string, error) {
 	log := r.log.WithValues("function", "handleAppLogic", "crname", cr.GetName())
 	log.Debug("handleAppLogic")
 

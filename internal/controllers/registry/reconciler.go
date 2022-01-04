@@ -26,7 +26,7 @@ import (
 	"github.com/yndd/ndd-runtime/pkg/logging"
 	"github.com/yndd/nddo-runtime/pkg/reconciler/managed"
 	"github.com/yndd/nddo-runtime/pkg/resource"
-	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
+	asv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/handler"
 	"github.com/yndd/nddr-as-registry/internal/shared"
 	"github.com/yndd/nddr-org-registry/pkg/registry"
@@ -48,17 +48,17 @@ const (
 
 // Setup adds a controller that reconciles infra.
 func Setup(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControllerOptions) (string, chan gevent.GenericEvent, error) {
-	name := "nddo/" + strings.ToLower(asregv1alpha1.RegistryGroupKind)
-	rgfn := func() asregv1alpha1.Rg { return &asregv1alpha1.Registry{} }
-	rglfn := func() asregv1alpha1.RgList { return &asregv1alpha1.RegistryList{} }
-	//rrfn := func() asregv1alpha1.Rr { return &asregv1alpha1.Register{} }
-	//rrlfn := func() asregv1alpha1.RrList { return &asregv1alpha1.RegisterList{} }
+	name := "nddo/" + strings.ToLower(asv1alpha1.RegistryGroupKind)
+	rgfn := func() asv1alpha1.Rg { return &asv1alpha1.Registry{} }
+	rglfn := func() asv1alpha1.RgList { return &asv1alpha1.RegistryList{} }
+	//rrfn := func() asv1alpha1.Rr { return &asv1alpha1.Register{} }
+	//rrlfn := func() asv1alpha1.RrList { return &asv1alpha1.RegisterList{} }
 
 	events := make(chan gevent.GenericEvent)
 	//speedy := make(map[string]int)
 
 	r := managed.NewReconciler(mgr,
-		resource.ManagedKind(asregv1alpha1.RegistryGroupVersionKind),
+		resource.ManagedKind(asv1alpha1.RegistryGroupVersionKind),
 		managed.WithLogger(nddcopts.Logger.WithValues("controller", name)),
 		managed.WithApplication(&application{
 			client: resource.ClientApplicator{
@@ -83,13 +83,13 @@ func Setup(mgr ctrl.Manager, o controller.Options, nddcopts *shared.NddControlle
 		newRegistryList: rglfn,
 	}
 
-	return asregv1alpha1.RegistryGroupKind, events, ctrl.NewControllerManagedBy(mgr).
+	return asv1alpha1.RegistryGroupKind, events, ctrl.NewControllerManagedBy(mgr).
 		Named(name).
 		WithOptions(o).
-		For(&asregv1alpha1.Registry{}).
-		Owns(&asregv1alpha1.Registry{}).
+		For(&asv1alpha1.Registry{}).
+		Owns(&asv1alpha1.Registry{}).
 		WithEventFilter(resource.IgnoreUpdateWithoutGenerationChangePredicate()).
-		Watches(&source.Kind{Type: &asregv1alpha1.Register{}}, registerHandler).
+		Watches(&source.Kind{Type: &asv1alpha1.Register{}}, registerHandler).
 		Watches(&source.Channel{Source: events}, registerHandler).
 		WithEventFilter(resource.IgnoreUpdateWithoutGenerationChangePredicate()).
 		Complete(r)
@@ -100,19 +100,19 @@ type application struct {
 	client resource.ClientApplicator
 	log    logging.Logger
 
-	newRegistry     func() asregv1alpha1.Rg
-	newRegistryList func() asregv1alpha1.RgList
+	newRegistry     func() asv1alpha1.Rg
+	newRegistryList func() asv1alpha1.RgList
 
 	registry registry.Registry
 	handler  handler.Handler
 }
 
-func getCrName(cr asregv1alpha1.Rg) string {
+func getCrName(cr asv1alpha1.Rg) string {
 	return strings.Join([]string{cr.GetNamespace(), cr.GetName()}, ".")
 }
 
 func (r *application) Initialize(ctx context.Context, mg resource.Managed) error {
-	cr, ok := mg.(*asregv1alpha1.Registry)
+	cr, ok := mg.(*asv1alpha1.Registry)
 	if !ok {
 		return errors.New(errUnexpectedResource)
 	}
@@ -126,7 +126,7 @@ func (r *application) Initialize(ctx context.Context, mg resource.Managed) error
 }
 
 func (r *application) Update(ctx context.Context, mg resource.Managed) (map[string]string, error) {
-	cr, ok := mg.(*asregv1alpha1.Registry)
+	cr, ok := mg.(*asv1alpha1.Registry)
 	if !ok {
 		return nil, errors.New(errUnexpectedResource)
 	}
@@ -135,13 +135,13 @@ func (r *application) Update(ctx context.Context, mg resource.Managed) (map[stri
 }
 
 func (r *application) FinalUpdate(ctx context.Context, mg resource.Managed) {
-	//cr, _ := mg.(*asregv1alpha1.Registry)
+	//cr, _ := mg.(*asv1alpha1.Registry)
 	//crName := getCrName(cr)
 	//r.infra[crName].PrintNodes(crName)
 }
 
 func (r *application) Timeout(ctx context.Context, mg resource.Managed) time.Duration {
-	cr, _ := mg.(*asregv1alpha1.Registry)
+	cr, _ := mg.(*asv1alpha1.Registry)
 	crName := getCrName(cr)
 	speedy := r.handler.GetSpeedy(crName)
 	if speedy <= 2 {
@@ -159,7 +159,7 @@ func (r *application) Timeout(ctx context.Context, mg resource.Managed) time.Dur
 }
 
 func (r *application) Delete(ctx context.Context, mg resource.Managed) (bool, error) {
-	cr, ok := mg.(*asregv1alpha1.Registry)
+	cr, ok := mg.(*asv1alpha1.Registry)
 	if !ok {
 		return false, errors.New(errUnexpectedResource)
 	}
@@ -173,12 +173,15 @@ func (r *application) Delete(ctx context.Context, mg resource.Managed) (bool, er
 }
 
 func (r *application) FinalDelete(ctx context.Context, mg resource.Managed) {
-	cr, _ := mg.(*asregv1alpha1.Registry)
+	cr, ok := mg.(*asv1alpha1.Registry)
+	if !ok {
+		return 
+	}
 	crName := getCrName(cr)
 	r.handler.Delete(crName)
 }
 
-func (r *application) handleAppLogic(ctx context.Context, cr asregv1alpha1.Rg) (map[string]string, error) {
+func (r *application) handleAppLogic(ctx context.Context, cr asv1alpha1.Rg) (map[string]string, error) {
 	log := r.log.WithValues("function", "handleAppLogic", "crname", cr.GetName())
 	log.Debug("handleAppLogic")
 

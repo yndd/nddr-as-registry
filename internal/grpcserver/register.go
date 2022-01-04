@@ -23,7 +23,7 @@ import (
 	"time"
 
 	"github.com/yndd/nddo-grpc/resource/resourcepb"
-	asregv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
+	asv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/handler"
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"sigs.k8s.io/controller-runtime/pkg/event"
@@ -59,8 +59,8 @@ func (r *server) ResourceRequest(ctx context.Context, req *resourcepb.Request) (
 
 	// send a generic event to trigger a registry reconciliation based on a new allocation
 	// to update the status
-	r.eventChs[asregv1alpha1.RegistryGroupKind] <- event.GenericEvent{
-		Object: &asregv1alpha1.Register{
+	r.eventChs[asv1alpha1.RegistryGroupKind] <- event.GenericEvent{
+		Object: &asv1alpha1.Register{
 			ObjectMeta: metav1.ObjectMeta{Name: req.GetResourceName(), Namespace: namespace},
 		},
 	}
@@ -97,8 +97,8 @@ func (r *server) ResourceRelease(ctx context.Context, req *resourcepb.Request) (
 	}
 
 	// send a generic event to trigger a registry reconciliation based on a new DeAllocation
-	r.eventChs[asregv1alpha1.RegistryGroupKind] <- event.GenericEvent{
-		Object: &asregv1alpha1.Register{
+	r.eventChs[asv1alpha1.RegistryGroupKind] <- event.GenericEvent{
+		Object: &asv1alpha1.Register{
 			ObjectMeta: metav1.ObjectMeta{Name: req.GetResourceName(), Namespace: namespace},
 		},
 	}
