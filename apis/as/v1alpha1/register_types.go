@@ -44,14 +44,15 @@ type AsRegister struct {
 
 // A RegisterSpec defines the desired state of a Register.
 type RegisterSpec struct {
-	Register *AsRegister `json:"register,omitempty"`
+	nddov1.OdaInfo `json:",inline"`
+	RegistryName   *string     `json:"registry-name"`
+	Register       *AsRegister `json:"register,omitempty"`
 }
 
 // A RegisterStatus represents the observed state of a Register.
 type RegisterStatus struct {
 	nddv1.ConditionedStatus `json:",inline"`
-	OrganizationName        *string         `json:"organization-name,omitempty"`
-	DeploymentName          *string         `json:"deployment-name,omitempty"`
+	nddov1.OdaInfo          `json:",inline"`
 	RegistryName            *string         `json:"registry-name,omitempty"`
 	Register                *NddrAsRegister `json:"register,omitempty"`
 }
@@ -62,8 +63,9 @@ type RegisterStatus struct {
 // +kubebuilder:subresource:status
 // +kubebuilder:printcolumn:name="SYNC",type="string",JSONPath=".status.conditions[?(@.kind=='Synced')].status"
 // +kubebuilder:printcolumn:name="STATUS",type="string",JSONPath=".status.conditions[?(@.kind=='Ready')].status"
-// +kubebuilder:printcolumn:name="ORG",type="string",JSONPath=".status.organization-name"
-// +kubebuilder:printcolumn:name="DEPL",type="string",JSONPath=".status.deployment-name"
+// +kubebuilder:printcolumn:name="ORG",type="string",JSONPath=".status.oda[?(@.key=='organization')].value"
+// +kubebuilder:printcolumn:name="DEP",type="string",JSONPath=".status.oda[?(@.key=='deployment')].value"
+// +kubebuilder:printcolumn:name="AZ",type="string",JSONPath=".status.oda[?(@.key=='availability-zone')].value"
 // +kubebuilder:printcolumn:name="REGISTRY",type="string",JSONPath=".status.registry-name"
 // +kubebuilder:printcolumn:name="AS",type="string",JSONPath=".status.register.state.as",description="assigned NI index"
 // +kubebuilder:printcolumn:name="AGE",type="date",JSONPath=".metadata.creationTimestamp"

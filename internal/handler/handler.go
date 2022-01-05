@@ -41,7 +41,7 @@ func (r *handler) WithClient(c client.Client) {
 
 type RegisterInfo struct {
 	Namespace    string
-	RegisterName string
+	Name         string
 	RegistryName string
 	CrName       string
 	Index        uint32
@@ -124,11 +124,11 @@ func (r *handler) Register(ctx context.Context, info *RegisterInfo) (*uint32, er
 	if err != nil {
 		return nil, err
 	}
-	registerName := info.RegisterName
+	requestName := info.Name
 	sourceTag := info.SourceTag
 
 	r.log.Debug("pool insert", "index", index)
-	as := pool.InsertByIndex(*index, registerName, sourceTag)
+	as := pool.InsertByIndex(*index, requestName, sourceTag)
 	r.log.Debug("pool inserted", "index", index, "as", as)
 
 	return &as, nil
@@ -140,11 +140,11 @@ func (r *handler) DeRegister(ctx context.Context, info *RegisterInfo) error {
 	if err != nil {
 		return err
 	}
-	registerName := info.RegisterName
+	requestName := info.Name
 	sourceTag := info.SourceTag
 
 	r.log.Debug("pool delete", "index", index)
-	pool.DeleteByIndex(*index, registerName, sourceTag)
+	pool.DeleteByIndex(*index, requestName, sourceTag)
 	r.log.Debug("pool deleted", "index", index)
 
 	return nil

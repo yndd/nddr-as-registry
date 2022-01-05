@@ -166,12 +166,11 @@ func (r *application) handleAppLogic(ctx context.Context, cr asv1alpha1.Rr) (map
 	log := r.log.WithValues("function", "handleAppLogic", "crname", cr.GetName())
 	log.Debug("handleAppLogic")
 
-	crName := getCrName(cr)
-
 	registerInfo := &handler.RegisterInfo{
 		Namespace:    cr.GetNamespace(),
 		RegistryName: cr.GetRegistryName(),
-		CrName:       crName,
+		Name:         cr.GetName(),
+		CrName:       getCrName(cr),
 		Selector:     cr.GetSelector(),
 		SourceTag:    cr.GetSourceTag(),
 	}
@@ -185,8 +184,9 @@ func (r *application) handleAppLogic(ctx context.Context, cr asv1alpha1.Rr) (map
 
 	cr.SetAs(*as)
 
-	cr.SetOrganizationName(cr.GetOrganizationName())
-	cr.SetDeploymentName(cr.GetDeploymentName())
+	cr.SetOrganization(cr.GetOrganization())
+	cr.SetDeployment(cr.GetDeployment())
+	cr.SetAvailabilityZone(cr.GetAvailabilityZone())
 	cr.SetRegistryName(cr.GetRegistryName())
 
 	return nil, nil

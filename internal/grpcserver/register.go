@@ -39,13 +39,11 @@ func (r *server) ResourceGet(ctx context.Context, req *resourcepb.Request) (*res
 func (r *server) ResourceRequest(ctx context.Context, req *resourcepb.Request) (*resourcepb.Reply, error) {
 	log := r.log.WithValues("Request", req)
 
-	namespace := req.GetNamespace()
-	registryName := strings.Split(req.GetResourceName(), ".")[0]
-
 	registerInfo := &handler.RegisterInfo{
-		Namespace:    namespace,
-		RegistryName: registryName,
-		CrName:       strings.Join([]string{namespace, registryName}, "."),
+		Namespace:    req.GetNamespace(),
+		RegistryName: req.GetRegistryName(),
+		Name:         req.GetName(),
+		CrName:       strings.Join([]string{req.GetNamespace(), req.GetRegistryName()}, "."),
 		Selector:     req.Request.Selector,
 		SourceTag:    req.Request.SourceTag,
 	}
@@ -61,7 +59,7 @@ func (r *server) ResourceRequest(ctx context.Context, req *resourcepb.Request) (
 	// to update the status
 	r.eventChs[asv1alpha1.RegistryGroupKind] <- event.GenericEvent{
 		Object: &asv1alpha1.Register{
-			ObjectMeta: metav1.ObjectMeta{Name: req.GetResourceName(), Namespace: namespace},
+			ObjectMeta: metav1.ObjectMeta{Name: req.GetName(), Namespace: req.GetNamespace()},
 		},
 	}
 
@@ -70,7 +68,7 @@ func (r *server) ResourceRequest(ctx context.Context, req *resourcepb.Request) (
 		Timestamp:  time.Now().UnixNano(),
 		ExpiryTime: time.Now().UnixNano(),
 		Data: map[string]*resourcepb.TypedValue{
-			"index": {Value: &resourcepb.TypedValue_StringVal{StringVal: strconv.Itoa(int(*index))}},
+			"as": {Value: &resourcepb.TypedValue_StringVal{StringVal: strconv.Itoa(int(*index))}},
 		},
 	}, nil
 }
@@ -79,13 +77,11 @@ func (r *server) ResourceRelease(ctx context.Context, req *resourcepb.Request) (
 	log := r.log.WithValues("Request", req)
 	log.Debug("ResourceDeAlloc...")
 
-	namespace := req.GetNamespace()
-	registryName := strings.Split(req.GetResourceName(), ".")[0]
-
 	registerInfo := &handler.RegisterInfo{
-		Namespace:    namespace,
-		RegistryName: registryName,
-		CrName:       strings.Join([]string{namespace, registryName}, "."),
+		Namespace:    req.GetNamespace(),
+		RegistryName: req.GetRegistryName(),
+		CrName:       strings.Join([]string{req.GetNamespace(), req.GetRegistryName()}, "."),
+		Name:         req.GetName(),
 		Selector:     req.Request.Selector,
 		SourceTag:    req.Request.SourceTag,
 	}
@@ -99,7 +95,7 @@ func (r *server) ResourceRelease(ctx context.Context, req *resourcepb.Request) (
 	// send a generic event to trigger a registry reconciliation based on a new DeAllocation
 	r.eventChs[asv1alpha1.RegistryGroupKind] <- event.GenericEvent{
 		Object: &asv1alpha1.Register{
-			ObjectMeta: metav1.ObjectMeta{Name: req.GetResourceName(), Namespace: namespace},
+			ObjectMeta: metav1.ObjectMeta{Name: req.GetName(), Namespace: req.GetNamespace()},
 		},
 	}
 

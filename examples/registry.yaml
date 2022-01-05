@@ -1,9 +1,12 @@
 apiVersion: as.nddr.yndd.io/v1alpha1
 kind: Registry
 metadata:
-  name: default
-  namespace: nokia
+  name: nokia
+  namespace: default
 spec:
+  oda:
+  - key: organization
+    value: nokia
   registry:
     description: deterministic global AS pool
     allocation-strategy: deterministic

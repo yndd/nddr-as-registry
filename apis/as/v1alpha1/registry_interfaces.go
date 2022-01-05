@@ -20,7 +20,6 @@ import (
 
 	nddv1 "github.com/yndd/ndd-runtime/apis/common/v1"
 	"github.com/yndd/ndd-runtime/pkg/utils"
-	"github.com/yndd/nddo-runtime/pkg/odr"
 	"github.com/yndd/nddo-runtime/pkg/resource"
 	"sigs.k8s.io/controller-runtime/pkg/client"
 )
@@ -50,8 +49,11 @@ type Rg interface {
 	resource.Object
 	resource.Conditioned
 
-	GetOrganizationName() string
-	GetDeploymentName() string
+	GetCondition(ct nddv1.ConditionKind) nddv1.Condition
+	SetConditions(c ...nddv1.Condition)
+	GetOrganization() string
+	GetDeployment() string
+	GetAvailabilityZone() string
 	GetRegistryName() string
 	GetAllocationStrategy() string
 	GetStart() uint32
@@ -60,8 +62,9 @@ type Rg interface {
 	GetAllocatedAses() []*uint32
 	InitializeResource() error
 	SetStatus(uint32, []*uint32)
-	SetOrganizationName(s string)
-	SetDeploymentName(string)
+	SetOrganization(string)
+	SetDeployment(string)
+	SetAvailabilityZone(s string)
 	SetRegistryName(s string)
 }
 
@@ -75,12 +78,16 @@ func (x *Registry) SetConditions(c ...nddv1.Condition) {
 	x.Status.SetConditions(c...)
 }
 
-func (x *Registry) GetOrganizationName() string {
-	return odr.GetOrganizationName(x.GetNamespace())
+func (x *Registry) GetOrganization() string {
+	return x.Spec.GetOrganization()
 }
 
-func (x *Registry) GetDeploymentName() string {
-	return odr.GetDeploymentName(x.GetNamespace())
+func (x *Registry) GetDeployment() string {
+	return x.Spec.GetDeployment()
+}
+
+func (x *Registry) GetAvailabilityZone() string {
+	return x.Spec.GetAvailabilityZone()
 }
 
 func (x *Registry) GetRegistryName() string {
@@ -151,12 +158,16 @@ func (n *Registry) SetStatus(allocated uint32, used []*uint32) {
 	n.Status.Registry.State.Used = used
 }
 
-func (x *Registry) SetOrganizationName(s string) {
-	x.Status.OrganizationName = &s
+func (x *Registry) SetOrganization(s string) {
+	x.Status.SetOrganization(s)
 }
 
-func (x *Registry) SetDeploymentName(s string) {
-	x.Status.DeploymentName = &s
+func (x *Registry) SetDeployment(s string) {
+	x.Status.SetDeployment(s)
+}
+
+func (x *Registry) SetAvailabilityZone(s string) {
+	x.Status.SetAvailabilityZone(s)
 }
 
 func (x *Registry) SetRegistryName(s string) {

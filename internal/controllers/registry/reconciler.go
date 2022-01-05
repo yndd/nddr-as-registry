@@ -196,8 +196,9 @@ func (r *application) handleAppLogic(ctx context.Context, cr asv1alpha1.Rg) (map
 	log.Debug("handleAppLogic", "allocated", allocated, "used", used)
 	cr.SetStatus(allocated, used)
 
-	cr.SetOrganizationName(cr.GetOrganizationName())
-	cr.SetDeploymentName(cr.GetDeploymentName())
+	cr.SetOrganization(cr.GetOrganization())
+	cr.SetDeployment(cr.GetDeployment())
+	cr.SetAvailabilityZone(cr.GetAvailabilityZone())
 	cr.SetRegistryName(cr.GetRegistryName())
 
 	// trick to use speedy for fast updates
