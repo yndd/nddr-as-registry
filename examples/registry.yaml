@@ -1,7 +1,7 @@
 apiVersion: as.nddr.yndd.io/v1alpha1
 kind: Registry
 metadata:
-  name: nokia
+  name: nokia-default
   namespace: default
 spec:
   oda:

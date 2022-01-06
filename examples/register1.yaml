@@ -1,7 +1,7 @@
 apiVersion: as.nddr.yndd.io/v1alpha1
 kind: Register
 metadata:
-  name: nokia.region1.default.register10
+  name: nokia.region1.infra.nokia-default.register1
   namespace: default
 spec:
   register:

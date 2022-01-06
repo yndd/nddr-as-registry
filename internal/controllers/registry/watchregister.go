@@ -21,6 +21,7 @@ import (
 
 	//ndddvrv1 "github.com/yndd/ndd-core/apis/dvr/v1"
 	"github.com/yndd/ndd-runtime/pkg/logging"
+	"github.com/yndd/nddo-runtime/pkg/odns"
 	asv1alpha1 "github.com/yndd/nddr-as-registry/apis/as/v1alpha1"
 	"github.com/yndd/nddr-as-registry/internal/handler"
 	"k8s.io/apimachinery/pkg/runtime"
@@ -80,9 +81,11 @@ func (e *EnqueueRequestForAllRegisters) add(obj runtime.Object, queue adder) {
 		return
 	}
 
+	registryName := odns.Name2OdnsRegistry(dd.GetName()).GetRegistryName()
+
 	for _, registry := range d.GetRegistries() {
 		// only enqueue if the org and/or deployment name match
-		if registry.GetNamespace() == dd.GetNamespace() {
+		if registry.GetName() == registryName {
 			crName := getCrName(registry)
 			e.handler.ResetSpeedy(crName)
 
